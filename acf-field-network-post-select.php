@@ -8,9 +8,9 @@ Author: Timi Wahalahti
 Author URI: https://sipp.is
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
+Network: true
 */
 
-// exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
