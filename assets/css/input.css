@@ -1,0 +1,14 @@
+/*
+* @Author: Timi Wahalahti
+* @Date:   2020-10-01 12:58:46
+* @Last Modified by:   Timi Wahalahti
+* @Last Modified time: 2020-10-01 17:14:28
+*/
+
+.select2-container .select2-dropdown span.afc-network-post-select-site {
+  display: none;
+}
+
+.acf-field-network-post-select span.afc-network-post-select-site {
+  color: #595959;
+}
