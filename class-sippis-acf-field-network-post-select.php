@@ -4,24 +4,24 @@
 
 class sippis_acf_field_network_post_select extends acf_field {
 
-	function __construct( $settings ) {
+  function __construct( $settings ) {
     $this->settings = $settings;
 
-		$this->name     = 'network_post_select';
-		$this->label    = __('Network posts select', 'sippis-acf-field-network-post-select');
-		$this->category = 'relational';
-		$this->defaults = [
-      'post_type'     => [],
-      'taxonomy'      => [],
-      'allow_null'    => false,
-      'ui'            => true,
+    $this->name     = 'network_post_select';
+    $this->label    = __('Network posts select', 'sippis-acf-field-network-post-select');
+    $this->category = 'relational';
+    $this->defaults = [
+      'post_type'   => [],
+      'taxonomy'    => [],
+      'allow_null'  => false,
+      'ui'          => true,
     ];
 
     add_action( 'wp_ajax_acf/fields/network_post_select/query',         [ $this, 'ajax_query' ] );
     add_action( 'wp_ajax_nopriv_acf/fields/network_post_select/query',  [ $this, 'ajax_query' ] );
 
     parent::__construct();
-	} // end __construct
+  } // end __construct
 
   function ajax_query() {
     if ( ! acf_verify_ajax() ) {
@@ -30,7 +30,7 @@ class sippis_acf_field_network_post_select extends acf_field {
 
     $response = $this->get_ajax_query( $_POST );
 
-    acf_send_ajax_results($response);
+    acf_send_ajax_results( $response );
   } // end ajax_query
 
   /**
@@ -305,21 +305,22 @@ class sippis_acf_field_network_post_select extends acf_field {
     $field['ajax']      = true;
     $field['choices']   = [];
 
+    if ( ! empty( $field['value'] ) ) {
+      // try to get posts based on field value
+      $posts = $this->get_posts( $field['value'], $field );
 
-    // try to get posts based on field value
-    $posts = $this->get_posts( $field['value'], $field );
+      if ( $posts ) {
+        foreach ( array_keys( $posts ) as $i ) {
+          $post = acf_extract_var( $posts, $i );
 
-    if ( $posts ) {
-      foreach ( array_keys( $posts ) as $i ) {
-        $post = acf_extract_var( $posts, $i );
-
-        // add posts found to choices available without select2
-        $field['choices'][ $field['value']['site_id'] . '|' . $post->ID ] = $this->get_post_title( $post, $field );
+          // add posts found to choices available without select2
+          $field['choices'][ $field['value']['site_id'] . '|' . $post->ID ] = $this->get_post_title( $post, $field );
+        }
       }
-    }
 
-    // change field value format so it's in same format with AJAX query return
-    $field['value'] = $field['value']['site_id'] . '|' . $field['value']['post_id'];
+      // change field value format so it's in same format with AJAX query return
+      $field['value'] = $field['value']['site_id'] . '|' . $field['value']['post_id'];
+    }
 
     acf_render_field( $field );
   } // end render_field
