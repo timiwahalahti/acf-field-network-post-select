@@ -14,6 +14,7 @@ class sippis_acf_field_network_post_select extends acf_field {
       'post_type'   => [],
       'taxonomy'    => [],
       'allow_null'  => false,
+      'multiple'    => false,
       'ui'          => true,
     ];
 
@@ -52,6 +53,8 @@ class sippis_acf_field_network_post_select extends acf_field {
       'field_key' => '',
       'paged'     => true,
     ] );
+
+    // var_dump( $options );
 
     // load field
     $field = acf_get_field( $options['field_key'] );
@@ -203,7 +206,7 @@ class sippis_acf_field_network_post_select extends acf_field {
     $current_site_id = get_current_blog_id();
 
     // switch to correct site for getting the title from right post
-    switch_to_blog( $field['value']['site_id'] );
+    switch_to_blog( $post->blog_id );
 
     // get post_id
     if ( ! $post_id ) {
@@ -213,8 +216,8 @@ class sippis_acf_field_network_post_select extends acf_field {
     $title = acf_get_post_title( $post, $is_search );
 
     // add site name to title
-    $site = get_blog_details( $field['value']['site_id'] );
-    $title = $title . ' <span class="afc-network-post-select-site">(' . $site->blogname . ')</span>';
+    $site = get_blog_details( $post->blog_id );
+    $title = $title . ' (' . $site->blogname . ')';
 
     // filters
     $title = apply_filters('acf/fields/network_post_select/result', $title, $post, $field, $post_id);
@@ -272,20 +275,36 @@ class sippis_acf_field_network_post_select extends acf_field {
    * @return array
    */
   function get_posts( $value, $field ) {
-    if ( empty( $value ) ) {
-      return false;
+    $posts = [];
+
+    // allowed sites
+    $get_sites_args = [];
+    if ( ! empty( $field['site_id'] ) ) {
+      $get_sites_args['site__in'] = acf_get_array( $field['site_id'] );
     }
 
+    // get sites in network
+    $sites = get_sites( $get_sites_args );
+
+    // store current site id
     $current_site_id = get_current_blog_id();
 
-    // switch to correct site for getting the posts from correct site
-    switch_to_blog( $value['site_id'] );
+    // loop sites
+    foreach ( $sites as $site ) {
+      switch_to_blog( $site->blog_id );
 
-    // get posts
-    $posts = acf_get_posts( [
-      'post__in'  => $value,
-      'post_type' => $field['post_type']
-    ] );
+      // get posts
+      $new_posts = acf_get_posts( [
+        'post__in'  => $value,
+        'post_type' => $field['post_type'],
+      ] );
+
+      foreach ( $new_posts as $key => $new_post ) {
+        $new_posts[ $key ]->blog_id = $site->blog_id;
+      }
+
+      $posts = array_merge( $posts, $new_posts );
+    }
 
     // switch back to current site
     switch_to_blog( $current_site_id );
@@ -305,22 +324,20 @@ class sippis_acf_field_network_post_select extends acf_field {
     $field['ajax']      = true;
     $field['choices']   = [];
 
-    if ( ! empty( $field['value'] ) ) {
-      // try to get posts based on field value
-      $posts = $this->get_posts( $field['value'], $field );
+    // try to get posts based on field value
+    $posts = $this->get_posts( $field['value'], $field );
 
-      if ( $posts ) {
-        foreach ( array_keys( $posts ) as $i ) {
-          $post = acf_extract_var( $posts, $i );
+    if ( $posts ) {
+      foreach ( array_keys( $posts ) as $i ) {
+        $post = acf_extract_var( $posts, $i );
 
-          // add posts found to choices available without select2
-          $field['choices'][ $field['value']['site_id'] . '|' . $post->ID ] = $this->get_post_title( $post, $field );
-        }
+        // add posts found to choices available without select2
+        $field['choices'][ $post->blog_id . '|' . $post->ID ] = $this->get_post_title( $post, $field );
       }
-
-      // change field value format so it's in same format with AJAX query return
-      $field['value'] = $field['value']['site_id'] . '|' . $field['value']['post_id'];
     }
+
+    // change field value format so it's in same format with AJAX query return
+    $field['value'] = $field['value']['site_id'] . '|' . $field['value']['post_id'];
 
     acf_render_field( $field );
   } // end render_field
@@ -331,9 +348,6 @@ class sippis_acf_field_network_post_select extends acf_field {
 
     wp_register_script( 'acf-field-network-post-select', "{$url}assets/js/input.js", [ 'acf-input' ], $version );
     wp_enqueue_script( 'acf-field-network-post-select' );
-
-    wp_register_style( 'acf-field-network-post-select', "{$url}assets/css/input.css", [ 'acf-input' ], $version );
-    wp_enqueue_style( 'acf-field-network-post-select' );
   } // end input_admin_enqueue_scripts
 
   /**
