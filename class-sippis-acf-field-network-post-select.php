@@ -156,8 +156,10 @@ class sippis_acf_field_network_post_select extends acf_field {
 
     // optgroup or single
     $post_type = acf_get_array( $args['post_type'] );
-    if ( count( $post_type ) == 1 ) {
-      $results = $results[0]['children'];
+    if ( count( $post_type ) === 1 ) {
+      if ( isset( $results[0] ) ) {
+        $results = $results[0]['children'];
+      }
     }
 
     $response = [
