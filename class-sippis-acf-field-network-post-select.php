@@ -119,6 +119,10 @@ class sippis_acf_field_network_post_select extends acf_field {
       $args = apply_filters( 'acf/fields/network_post_select/query', $args, $field, $options['post_id'] );
       $args = apply_filters( 'acf/fields/network_post_select/query/name=' . $field['name'], $args, $field, $options['post_id'] );
       $args = apply_filters( 'acf/fields/network_post_select/query/key=' . $field['key'], $args, $field, $options['post_id'] );
+      
+      if ( ! array_key_exists( 's', $args ) ) {
+        $is_search = false;
+      }
 
       // get posts grouped by post type
       $groups = acf_get_grouped_posts( $args );
