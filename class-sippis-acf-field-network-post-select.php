@@ -289,6 +289,11 @@ class sippis_acf_field_network_post_select extends acf_field {
       $get_sites_args['site__in'] = acf_get_array( $field['site_id'] );
     }
 
+    // filters for get_sites query
+    $get_sites_args = apply_filters( 'acf/fields/network_post_select/get_sites', $get_sites_args, $field, $options['post_id'] );
+    $get_sites_args = apply_filters( 'acf/fields/network_post_select/get_sites/name=' . $field['name'], $get_sites_args, $field, $options['post_id'] );
+    $get_sites_args = apply_filters( 'acf/fields/network_post_select/get_sites/key=' . $field['key'], $get_sites_args, $field, $options['post_id'] );
+    
     // get sites in network
     $sites = get_sites( $get_sites_args );
 
