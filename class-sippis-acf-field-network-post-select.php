@@ -299,16 +299,22 @@ class sippis_acf_field_network_post_select extends acf_field {
 
     // store current site id
     $current_site_id = get_current_blog_id();
+    
+    $args = [
+      'post__in'  => $value,
+      'post_type' => $field['post_type'],
+    ];
+
+    if ( empty( $value ) ) {
+      $args['posts_per_page'] = $this->query_defaults['posts_per_page'];
+    }
 
     // loop sites
     foreach ( $sites as $site ) {
       switch_to_blog( $site->blog_id );
 
       // get posts
-      $new_posts = acf_get_posts( [
-        'post__in'  => $value,
-        'post_type' => $field['post_type'],
-      ] );
+      $new_posts = acf_get_posts( $args );
 
       foreach ( $new_posts as $key => $new_post ) {
         $new_posts[ $key ]->blog_id = $site->blog_id;
