@@ -336,7 +336,7 @@ class sippis_acf_field_network_post_select extends acf_field {
    */
   function render_field( $field ) {
     $field['type']      = 'select';
-    $field['multiple']  = false;
+    // $field['multiple']  = false;
     $field['ui']        = true;
     $field['ajax']      = true;
     $field['choices']   = [];
@@ -423,6 +423,14 @@ class sippis_acf_field_network_post_select extends acf_field {
       'label'         => __( 'Allow Null?', 'acf' ),
       'instructions'  => '',
       'name'          => 'allow_null',
+      'type'          => 'true_false',
+      'ui'            => true,
+    ] );
+
+    acf_render_field_setting( $field, [
+      'label'         => __( 'Select multiple values?', 'acf' ),
+      'instructions'  => '',
+      'name'          => 'multiple',
       'type'          => 'true_false',
       'ui'            => true,
     ] );
