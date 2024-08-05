@@ -3,7 +3,7 @@
 Plugin Name: Advanced Custom Fields: Network posts select field
 Plugin URI: https://github.com/timiwahalahti/acf-field-post-object-network/
 Description: Adds a ACF field that allows selecting posts across the network sites.
-Version: 1.2.0
+Version: 1.2.1
 Author: Timi Wahalahti
 Author URI: https://sipp.is
 License: GPLv3 or later

@@ -25,7 +25,11 @@ class sippis_acf_field_network_post_select extends acf_field {
   } // end __construct
 
   function ajax_query() {
-    if ( ! acf_verify_ajax() ) {
+    
+    $nonce = acf_request_arg( 'nonce', '' );
+		$key   = acf_request_arg( 'field_key', '' );
+    
+    if ( ! acf_verify_ajax( $nonce, $key ) ) {
       die();
     }
 
@@ -339,6 +343,7 @@ class sippis_acf_field_network_post_select extends acf_field {
     // $field['multiple']  = false;
     $field['ui']        = true;
     $field['ajax']      = true;
+    $field['nonce']     = wp_create_nonce( $field['key'] );
     $field['choices']   = [];
 
     // try to get posts based on field value
@@ -353,8 +358,8 @@ class sippis_acf_field_network_post_select extends acf_field {
       }
     }
 
-    // change field value format so it's in same format with AJAX query return
-    $field['value'] = $field['value']['site_id'] . '|' . $field['value']['post_id'];
+    // change field value format so it's in same format with AJAX query return.
+    $field['value'] = isset($field['value'], $field['value']['site_id'], $field['value']['post_id']) ? $field['value']['site_id'] . '|' . $field['value']['post_id'] : '';
 
     acf_render_field( $field );
   } // end render_field
