@@ -1,3 +1,6 @@
+# Actively maintained version ➡️ [digitoimistodude/acf-field-network-post-select](https://github.com/digitoimistodude/acf-field-network-post-select)
+
+
 # Advanced Custom Fields: Network posts select field
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/timiwahalahti/acf-field-network-post-select?style=flat-square) ![Tested_up_to WordPress_5.5](https://img.shields.io/badge/tested_up_to-WordPress_5.5-blue.svg?style=flat-square) ![Compatible_with AFC_5](https://img.shields.io/badge/compatible_with-ACF_5-green.svg?style=flat-square) ![GitHub](https://img.shields.io/github/license/timiwahalahti/acf-field-network-post-select?style=flat-square)
